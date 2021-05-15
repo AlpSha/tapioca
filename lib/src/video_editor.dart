@@ -10,7 +10,7 @@ class VideoEditor {
     return version;
   }
 
-  static Future writeVideofile(String srcFilePath, String destFilePath, Map<String,Map<String, dynamic>> processing) async {
+  static Future writeVideofile(String srcFilePath, String destFilePath, Map<String,List<Map<String, dynamic>>> processing) async {
     await _channel.invokeMethod('writeVideofile',<String, dynamic> { 'srcFilePath': srcFilePath, 'destFilePath': destFilePath, 'processing': processing });
   }
 }
