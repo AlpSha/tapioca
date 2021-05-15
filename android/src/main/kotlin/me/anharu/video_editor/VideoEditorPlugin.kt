@@ -72,7 +72,7 @@ public class VideoEditorPlugin : FlutterPlugin, MethodCallHandler, PluginRegistr
                 result.error("dest_file_path_not_found", "the dest file path is not found.", null)
                 return
             }
-            val processing: HashMap<String, HashMap<String, Any>> = call.argument("processing")
+            val processing: HashMap<String,ArrayList<HashMap<String,Any>>> = call.argument("processing")
                     ?: run {
                         result.error("processing_data_not_found", "the processing is not found.", null)
                         return

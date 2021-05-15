@@ -90,8 +90,11 @@ class _MyAppState extends State<MyApp> {
               final tapiocaBalls = [
                 TapiocaBall.filter(Filters.pink),
                 TapiocaBall.imageOverlay(imageBitmap, 300, 300),
+                TapiocaBall.imageOverlay(imageBitmap, 450, 350),
                 TapiocaBall.textOverlay(
                     "text", 100, 10, 100, Color(0xffffc0cb)),
+                TapiocaBall.textOverlay(
+                    "text2", 120, 40, 140, Color(0xffffc0cb)),
               ];
               if (_video != null) {
                 final cup = Cup(Content(_video.path), tapiocaBalls);

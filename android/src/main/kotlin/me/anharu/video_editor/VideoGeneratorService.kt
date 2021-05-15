@@ -17,29 +17,35 @@ import me.anharu.video_editor.filter.GlTextOverlayFilter
 
 
 interface VideoGeneratorServiceInterface {
-    fun writeVideofile(processing: HashMap<String,HashMap<String,Any>>, result: Result, activity: Activity);
+    fun writeVideofile(processing: HashMap<String,ArrayList<HashMap<String,Any>>>, result: Result, activity: Activity);
 }
 
 class VideoGeneratorService(
         private val composer: Mp4Composer
 ) : VideoGeneratorServiceInterface {
-    override fun writeVideofile(processing: HashMap<String,HashMap<String,Any>>, result: Result, activity: Activity ) {
+    override fun writeVideofile(processing: HashMap<String,ArrayList<HashMap<String,Any>>>, result: Result, activity: Activity ) {
         val filters: MutableList<GlFilter> = mutableListOf()
         try {
             processing.forEach { (k, v) ->
                 when (k) {
                     "Filter" -> {
-                        val passFilter = Filter(v)
-                        val filter = GlColorBlendFilter(passFilter)
-                        filters.add(filter)
+                        v.forEach {
+                            val passFilter = Filter(it)
+                            val filter = GlColorBlendFilter(passFilter)
+                            filters.add(filter)
+                        }
                     }
                     "TextOverlay" -> {
-                        val textOverlay = TextOverlay(v)
-                        filters.add(GlTextOverlayFilter(textOverlay))
+                        v.forEach {
+                            val textOverlay = TextOverlay(it)
+                            filters.add(GlTextOverlayFilter(textOverlay))
+                        }
                     }
                     "ImageOverlay" -> {
-                        val imageOverlay = ImageOverlay(v)
-                        filters.add(GlImageOverlayFilter(imageOverlay))
+                        v.forEach {
+                            val imageOverlay = ImageOverlay(it)
+                            filters.add(GlImageOverlayFilter(imageOverlay))
+                        }
                     }
                 }
             }
