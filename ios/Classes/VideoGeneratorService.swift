@@ -168,9 +168,9 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
         assetExport.outputURL = movieDestinationUrl
         assetExport.exportAsynchronously(completionHandler:{
          switch assetExport.status{
-           case  AVAssetExportSessionStatus.failed:
+           case  AVAssetExportSession.Status.failed:
            print("failed \(assetExport.error)")
-           case AVAssetExportSessionStatus.cancelled:
+           case AVAssetExportSession.Status.cancelled:
            print("cancelled \(assetExport.error)")
            default:
            print("Movie complete")
