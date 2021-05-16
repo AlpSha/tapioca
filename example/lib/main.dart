@@ -20,6 +20,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final navigatorKey = GlobalKey<NavigatorState>();
+  final imagePicker = ImagePicker();
   File _video;
   bool isLoading = false;
 
@@ -52,7 +53,8 @@ class _MyAppState extends State<MyApp> {
   _pickVideo() async {
 
     try {
-      File video = await ImagePicker.pickVideo(source: ImageSource.gallery);
+      final pickedVideo = await imagePicker.getVideo(source: ImageSource.gallery);
+      File video = File(pickedVideo.path);
       print(video.path);
       setState(() {
         _video = video;
@@ -153,7 +155,7 @@ class _VideoAppState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _controller.value.initialized
+        child: _controller.value.isInitialized
             ? AspectRatio(
                 aspectRatio: _controller.value.aspectRatio,
                 child: VideoPlayer(_controller),
