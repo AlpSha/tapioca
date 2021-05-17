@@ -30,13 +30,14 @@ public class SwiftVideoEditorPlugin: NSObject, FlutterPlugin {
                                   details: nil))
                 return
         }
-        guard let processing = args["processing"] as?  [String: [String: Any]] else {
+        guard let processing = args["processing"] as?  [String: [[String: Any]]] else {
                 result(FlutterError(code: "processing_data_not_found",
                                   message: "the processing is not found.",
                                   details: nil))
                 return
         }
-        video.writeVideofile(srcPath: srcName, destPath: destName, processing: processing,result: result)
+        NSLog(processing.description)
+        video.writeVideofile(srcPath: srcName, destPath: destName, processing: processing ,result: result)
     default:
         result("iOS d" + UIDevice.current.systemVersion)
     }

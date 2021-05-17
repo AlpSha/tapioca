@@ -4,11 +4,11 @@ import Photos
 import Flutter
 
 public protocol VideoGeneratorServiceInterface {
-  func writeVideofile(srcPath:String, destPath:String, processing: [String: [String:Any]], result: @escaping FlutterResult)
+  func writeVideofile(srcPath:String, destPath:String, processing: [String: [[String:Any]]], result: @escaping FlutterResult)
 }
 
 public class VideoGeneratorService: VideoGeneratorServiceInterface {
-  public func writeVideofile(srcPath:String, destPath:String, processing: [String: [String:Any]], result: @escaping FlutterResult) {
+  public func writeVideofile(srcPath:String, destPath:String, processing: [String: [[String:Any]]], result: @escaping FlutterResult) {
     let fileURL = URL(fileURLWithPath: srcPath)
 
     let composition = AVMutableComposition()
@@ -60,70 +60,75 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
       for (key, value) in processing  {
         switch key {
           case "Filter":
-          guard let type = value["type"] as? String else {
-            print("not found value")
-            result(FlutterError(code: "processing_data_invalid",
-              message: "one Filter member is not found.",
-              details: nil))
-            return
-          }
-          let filter = Filter(type: type)
-          let layer = CALayer()
-          layer.backgroundColor = UIColor(hex:filter.type.replacingOccurrences(of: "#", with: "")).cgColor
-          layer.opacity = 0.5
-          layer.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-          filters.append(layer)
-
+            for (item) in value {
+                guard let type = item["type"] as? String else {
+                    print("not found value")
+                    result(FlutterError(code: "processing_data_invalid",
+                      message: "one Filter member is not found.",
+                      details: nil))
+                    return
+                  }
+                  let filter = Filter(type: type)
+                  let layer = CALayer()
+                  layer.backgroundColor = UIColor(hex:filter.type.replacingOccurrences(of: "#", with: "")).cgColor
+                  layer.opacity = 0.5
+                  layer.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+                  filters.append(layer)
+            }
           case "TextOverlay":
-          guard let text = value["text"] as? String,
-          let x = value["x"] as? NSNumber,
-          let y = value["y"] as? NSNumber,
-          let textSize = value["size"] as? NSNumber,
-          let color = value["color"] as? String else {
-            print("not found text overlay")
-            result(FlutterError(code: "processing_data_invalid",
-              message: "one TextOverlay member is not found.",
-              details: nil))
-            return
-          }
-          let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
-          let titleLayer = CALayer()
-          let uiImage = imageWith(name: textOverlay.text, width: size.width, height: size.width, size: textOverlay.size.intValue, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
-          titleLayer.contents = uiImage?.cgImage
-          print(uiImage?.size)
-          titleLayer.frame = CGRect(x: CGFloat(textOverlay.x.intValue), y: size.height - CGFloat(textOverlay.y.intValue) - uiImage!.size.height,
-            width: uiImage!.size.width, height: uiImage!.size.height)
-          filters.append(titleLayer)
+            for (item) in value {
+                guard let text = item["text"] as? String,
+                      let x = item["x"] as? NSNumber,
+                      let y = item["y"] as? NSNumber,
+                      let textSize = item["size"] as? NSNumber,
+                      let color = item["color"] as? String else {
+                        print("not found text overlay")
+                        result(FlutterError(code: "processing_data_invalid",
+                          message: "one TextOverlay member is not found.",
+                          details: nil))
+                        return
+                      }
+                      let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
+                      let titleLayer = CALayer()
+                      let uiImage = imageWith(name: textOverlay.text, width: size.width, height: size.width, size: textOverlay.size.intValue, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
+                      titleLayer.contents = uiImage?.cgImage
+                      print(uiImage?.size)
+                      titleLayer.frame = CGRect(x: CGFloat(textOverlay.x.intValue), y: size.height - CGFloat(textOverlay.y.intValue) - uiImage!.size.height,
+                        width: uiImage!.size.width, height: uiImage!.size.height)
+                      filters.append(titleLayer)
+            }
           case "ImageOverlay":
-          guard let bitmap = value["bitmap"] as? FlutterStandardTypedData,
-          let x = value["x"] as? NSNumber,
-          let y = value["y"] as? NSNumber else {
-            print("not found image overlay")
-            result(FlutterError(code: "processing_data_invalid",
-              message: "one ImageOverlay member is not found.",
-              details: nil))
-            return
-          }
-          let imageOverlay = ImageOverlay(bitmap: bitmap.data, x: x, y: y)
-          let datos: Data = imageOverlay.bitmap
-          let image = UIImage(data: datos)
-          let imglayer = CALayer()
-          imglayer.contents = image?.cgImage
-          guard let imageWidth: CGFloat = image?.size.width else {
-            result(FlutterError(code: "video_processing_failed",
-              message: "video processing is failed.",
-              details: nil))
-            return
-          }
-          guard let imageHeight: CGFloat = image?.size.height else {
-            result(FlutterError(code: "video_processing_failed",
-              message: "video processing is failed.",
-              details: nil))
-            return
-          }
-          imglayer.frame = CGRect(x:CGFloat(imageOverlay.x.intValue), y: size.height - CGFloat(imageOverlay.y.intValue) - imageHeight, width: imageWidth, height: imageHeight)
-          imglayer.opacity = 1
-          filters.append(imglayer)
+            for (item) in value {
+                guard let bitmap = item["bitmap"] as? FlutterStandardTypedData,
+                          let x = item["x"] as? NSNumber,
+                          let y = item["y"] as? NSNumber else {
+                            print("not found image overlay")
+                            result(FlutterError(code: "processing_data_invalid",
+                              message: "one ImageOverlay member is not found.",
+                              details: nil))
+                            return
+                          }
+                          let imageOverlay = ImageOverlay(bitmap: bitmap.data, x: x, y: y)
+                          let datos: Data = imageOverlay.bitmap
+                          let image = UIImage(data: datos)
+                          let imglayer = CALayer()
+                          imglayer.contents = image?.cgImage
+                          guard let imageWidth: CGFloat = image?.size.width else {
+                            result(FlutterError(code: "video_processing_failed",
+                              message: "video processing is failed.",
+                              details: nil))
+                            return
+                          }
+                          guard let imageHeight: CGFloat = image?.size.height else {
+                            result(FlutterError(code: "video_processing_failed",
+                              message: "video processing is failed.",
+                              details: nil))
+                            return
+                          }
+                          imglayer.frame = CGRect(x:CGFloat(imageOverlay.x.intValue), y: size.height - CGFloat(imageOverlay.y.intValue) - imageHeight, width: imageWidth, height: imageHeight)
+                          imglayer.opacity = 1
+                          filters.append(imglayer)
+            }
           default:
           print("Not implement filter name")
         }
